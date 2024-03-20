@@ -1,10 +1,14 @@
 package com.artgallery.db.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.Date;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,6 +19,7 @@ public class User {
 
     @Column
     @Temporal(TemporalType.DATE)
+    @JsonFormat(pattern="yyyy-MM-dd")
     private Date birthDate;
 
     @Column(length = 127)
@@ -23,7 +28,8 @@ public class User {
     @Column(length = 1023)
     private String about;
 
-    @Column
+    @Column(updatable = false)
+    @CreatedDate
     @Temporal(TemporalType.DATE)
     private Date creationDate;
 
@@ -32,7 +38,6 @@ public class User {
         this.birthDate = birthDate;
         this.country = country;
         this.about = about;
-        this.creationDate = new Date();
     }
 
     protected User() {

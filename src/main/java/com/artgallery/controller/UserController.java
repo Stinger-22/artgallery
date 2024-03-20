@@ -2,10 +2,7 @@ package com.artgallery.controller;
 
 import com.artgallery.db.entity.User;
 import com.artgallery.service.UserService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -18,8 +15,18 @@ public class UserController {
         this.userService = userService;
     }
 
+    @GetMapping()
+    public Iterable<User> getUsers() {
+        return userService.getUsers();
+    }
+
     @GetMapping("/{id}")
     public Optional<User> getUserById(@PathVariable Long id) {
         return userService.getUserById(id);
+    }
+
+    @PostMapping(consumes = "application/json", produces = "application/json")
+    public User createUser(@RequestBody User newUser) {
+        return userService.createUser(newUser);
     }
 }
