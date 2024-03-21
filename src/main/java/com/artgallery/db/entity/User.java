@@ -6,6 +6,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.Date;
+import java.util.Objects;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
@@ -42,6 +43,19 @@ public class User {
 
     protected User() {
 
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(userId, user.userId) && Objects.equals(nickname, user.nickname) && Objects.equals(birthDate, user.birthDate) && Objects.equals(country, user.country) && Objects.equals(about, user.about) && Objects.equals(creationDate, user.creationDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId, nickname, birthDate, country, about, creationDate);
     }
 
     @Override
