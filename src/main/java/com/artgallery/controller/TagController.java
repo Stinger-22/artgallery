@@ -1,5 +1,6 @@
 package com.artgallery.controller;
 
+import com.artgallery.db.entity.Image;
 import com.artgallery.db.entity.Tag;
 import com.artgallery.service.TagService;
 import org.springframework.web.bind.annotation.*;
@@ -7,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/tag")
+@RequestMapping({"/api/v1/tag", "/api/tag"})
 public class TagController {
     private final TagService tagService;
 

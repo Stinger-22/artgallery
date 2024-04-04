@@ -1,7 +1,6 @@
 package com.artgallery.db.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
@@ -18,40 +17,44 @@ import java.util.Objects;
 @Setter
 @ToString
 @RequiredArgsConstructor
-public class User {
+public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
+    private Long imageId;
 
-    @Column(length = 63, unique = true)
-    private String nickname;
+    @JsonBackReference
+    @ManyToOne
+    @JoinColumn(name="userId")
+    @ToString.Exclude
+    private User user;
 
-    @Column
-    @Temporal(TemporalType.DATE)
-    @JsonFormat(pattern="yyyy-MM-dd")
-    private Date birthDate;
+    @ManyToMany
+    @JoinTable(name = "image_tag",
+            joinColumns = @JoinColumn(name = "tagId"),
+            inverseJoinColumns = @JoinColumn(name = "imageId"))
+    @ToString.Exclude
+    private List<Tag> tags;
 
     @Column(length = 127)
-    private String country;
+    private String title;
 
-    @Column(length = 1023)
-    private String about;
+    @Column(length = 2047)
+    private String description;
+
+    @Column(length = 63)
+    private String filename;
 
     @Column(updatable = false)
     @CreatedDate
     @Temporal(TemporalType.DATE)
     private Date creationDate;
 
-    @OneToMany(mappedBy = "user")
-    @JsonManagedReference
-    @ToString.Exclude
-    private List<Image> images;
-
-    public User(String nickname, Date birthDate, String country, String about) {
-        this.nickname = nickname;
-        this.birthDate = birthDate;
-        this.country = country;
-        this.about = about;
+    public Image(Long imageId, User user, String title, String description, Date creationDate) {
+        this.imageId = imageId;
+        this.user = user;
+        this.title = title;
+        this.description = description;
+        this.creationDate = creationDate;
     }
 
     @Override
@@ -61,8 +64,8 @@ public class User {
         Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
         Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
         if (thisEffectiveClass != oEffectiveClass) return false;
-        User user = (User) o;
-        return getUserId() != null && Objects.equals(getUserId(), user.getUserId());
+        Image image = (Image) o;
+        return getImageId() != null && Objects.equals(getImageId(), image.getImageId());
     }
 
     @Override
