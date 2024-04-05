@@ -1,6 +1,7 @@
 package com.artgallery.db.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
@@ -28,14 +29,15 @@ public class Image {
     @ToString.Exclude
     private User user;
 
-    @ManyToMany
+    @JsonManagedReference
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinTable(name = "image_tag",
             joinColumns = @JoinColumn(name = "tagId"),
             inverseJoinColumns = @JoinColumn(name = "imageId"))
     @ToString.Exclude
     private List<Tag> tags;
 
-    @Column(length = 127)
+    @Column(length = 31)
     private String title;
 
     @Column(length = 2047)
@@ -49,12 +51,10 @@ public class Image {
     @Temporal(TemporalType.DATE)
     private Date creationDate;
 
-    public Image(Long imageId, User user, String title, String description, Date creationDate) {
-        this.imageId = imageId;
+    public Image(User user, String title, String description) {
         this.user = user;
         this.title = title;
         this.description = description;
-        this.creationDate = creationDate;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.artgallery.db.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
@@ -20,6 +21,7 @@ public class Tag {
     @Column(length = 31, unique = true)
     private String tagName;
 
+    @JsonBackReference
     @ManyToMany(mappedBy = "tags")
     @ToString.Exclude
     private List<Image> images;

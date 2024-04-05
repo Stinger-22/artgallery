@@ -2,16 +2,16 @@ package com.artgallery.controller;
 
 import com.artgallery.db.entity.Image;
 import com.artgallery.db.entity.User;
+import com.artgallery.dto.ImageDTO;
 import com.artgallery.service.ImageService;
 import com.artgallery.service.UserService;
-import com.artgallery.storage.StorageService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.util.Optional;
 
 @RestController
@@ -19,12 +19,9 @@ import java.util.Optional;
 public class UserController {
     private final UserService userService;
     private final ImageService imageService;
-    private final StorageService storageService;
-
-    public UserController(UserService userService, ImageService imageService, StorageService storageService) {
+    public UserController(UserService userService, ImageService imageService) {
         this.userService = userService;
         this.imageService = imageService;
-        this.storageService = storageService;
     }
 
     @GetMapping()
@@ -49,27 +46,13 @@ public class UserController {
     }
 
     @GetMapping("{userId}/image")
-    public Iterable<Image> getImages(@PathVariable Long userId) {
-        return userService.getImages(userId);
+    public Iterable<Image> getUserImages(@PathVariable Long userId) {
+        return userService.getUserImages(userId);
     }
 
-//    @PostMapping("/image")
-//    public Image postImage(@RequestBody Image newImage, @RequestParam("file") MultipartFile fileImage) {
-//        Image createdImage = imageService.createImage(newImage);
-//        storageService.store(fileImage);
-//        return createdImage;
-//    }
-
-    @PostMapping("/image")
-    public ResponseEntity<?> postImage(@RequestPart("image") Image image, @RequestParam("file") MultipartFile fileImage) {
-        storageService.store(fileImage);
-        System.out.println(image);
+    @PostMapping(value = "/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> postImage(@RequestPart("image") ImageDTO imageDTO, @RequestParam("file") MultipartFile fileImage) {
+        imageService.createImage(imageDTO, fileImage);
         return ResponseEntity.status(HttpStatus.OK).body("File successfully uploaded");
-    }
-
-    @DeleteMapping("/image/{name}")
-    @Transactional
-    public Image deleteImage(@PathVariable Long id) {
-        return userService.deleteImage(id);
     }
 }

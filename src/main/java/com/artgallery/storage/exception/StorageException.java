@@ -1,4 +1,4 @@
-package com.artgallery.storage;
+package com.artgallery.storage.exception;
 
 public class StorageException extends RuntimeException {
 

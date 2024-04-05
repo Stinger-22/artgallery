@@ -1,4 +1,11 @@
 package com.artgallery.dto;
 
-public record ImageDTO() {
+import java.util.List;
+
+public record ImageDTO(
+        Long userId,
+        List<String> tags,
+        String title,
+        String description
+) {
 }

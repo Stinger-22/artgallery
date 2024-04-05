@@ -44,12 +44,8 @@ public class UserService {
         }
     }
 
-    public Iterable<Image> getImages(Long userId) {
+    public Iterable<Image> getUserImages(Long userId) {
         User user = userRepository.findUserByUserId(userId);
         return imageRepository.getImagesByUser(user);
-    }
-
-    public Image deleteImage(Long id) {
-        return imageRepository.deleteImageByImageId(id);
     }
 }
