@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Formula;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -42,6 +43,9 @@ public class Image {
 
     @Column(length = 2047)
     private String description;
+
+    @Formula("(SELECT COUNT(i.image_id) FROM user_image_like i WHERE image_id = i.image_id)")
+    private Integer likes;
 
     @Column(length = 63)
     private String filename;
