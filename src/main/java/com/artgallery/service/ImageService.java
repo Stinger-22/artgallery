@@ -48,11 +48,11 @@ public class ImageService {
         String filename = image.get().getFilename();
         String extension = filename.substring(filename.length() - 3);
         System.out.println(extension);
-        if (extension.equals("jpg")) {
-            imageResponse.setContentType(MediaType.IMAGE_JPEG);
+        if (extension.equals("png")) {
+            imageResponse.setContentType(MediaType.IMAGE_PNG);
         }
         else {
-            imageResponse.setContentType(MediaType.IMAGE_PNG);
+            imageResponse.setContentType(MediaType.IMAGE_JPEG);
         }
         return imageResponse;
     }
