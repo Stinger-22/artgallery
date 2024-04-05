@@ -69,13 +69,13 @@ public class UserController {
     @PatchMapping(value = "{userId}/collection/add")
     public ResponseEntity<?> addImageToCollection(@PathVariable Long userId, @RequestParam Long collectionId, @RequestParam Long imageId) {
         collectionService.addImageToCollection(collectionId, imageId);
-        return ResponseEntity.status(HttpStatus.OK).body("");
+        return ResponseEntity.status(HttpStatus.OK).body("Added image from collection");
     }
 
     @DeleteMapping(value = "{userId}/collection/remove")
     public ResponseEntity<?> removeImageFromCollection(@PathVariable Long userId, @RequestParam Long collectionId, @RequestParam Long imageId) {
         collectionService.removeImageFromCollection(collectionId, imageId);
-        return ResponseEntity.status(HttpStatus.OK).body("Collection created");
+        return ResponseEntity.status(HttpStatus.OK).body("Removed image from collection");
     }
 
     @DeleteMapping(value = "{userId}/collection")
