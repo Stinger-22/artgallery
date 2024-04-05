@@ -47,6 +47,11 @@ public class User {
     @ToString.Exclude
     private List<Image> images;
 
+    @OneToMany(mappedBy = "user")
+    @JsonManagedReference
+    @ToString.Exclude
+    private List<Collection> collections;
+
     public User(String nickname, Date birthDate, String country, String about) {
         this.nickname = nickname;
         this.birthDate = birthDate;

@@ -30,7 +30,6 @@ public class ImageService {
     }
 
     public Image createImage(ImageDTO imageDTO, MultipartFile fileImage) {
-        //TODO Return appropriate status when file is not uploaded
         String filename = storageService.store(fileImage);
         Image image = mapper.toEntity(imageDTO);
         image.setFilename(filename);

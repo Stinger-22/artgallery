@@ -55,6 +55,10 @@ public class Image {
     @Temporal(TemporalType.DATE)
     private Date creationDate;
 
+    @JsonBackReference
+    @ManyToMany(mappedBy = "images")
+    private List<Collection> collections;
+
     public Image(User user, String title, String description) {
         this.user = user;
         this.title = title;
