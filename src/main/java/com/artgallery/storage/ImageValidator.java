@@ -16,7 +16,7 @@ public class ImageValidator {
     }
 
     private void validateExtension(MultipartFile file) {
-        String extension = FilenameUtils.getExtension(file.getOriginalFilename());
+        String extension = FilenameUtils.getExtension(file.getOriginalFilename().toLowerCase());
         if (!"png".equals(extension) && !"jpeg".equals(extension) && !"jpg".equals(extension)) {
             throw new InvalidFileExtensionException("Only jpg/jpeg and png files are accepted");
         }

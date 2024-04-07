@@ -47,4 +47,13 @@ public class CollectionService {
         images.remove(image);
         collectionRepository.save(collection);
     }
+
+    public void renameCollection(Long collectionId, String title) {
+        Collection collection = collectionRepository.findCollectionByCollectionId(collectionId);
+        if (collection == null) {
+            throw new RuntimeException("Collection not found");
+        }
+        collection.setTitle(title);
+        collectionRepository.save(collection);
+    }
 }

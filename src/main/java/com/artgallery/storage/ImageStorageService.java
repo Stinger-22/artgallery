@@ -31,7 +31,7 @@ public class ImageStorageService implements StorageService {
     public String store(MultipartFile file) {
         try {
             validator.validateUploadedFile(file);
-            String extension = FilenameUtils.getExtension(file.getOriginalFilename());
+            String extension = FilenameUtils.getExtension(file.getOriginalFilename().toLowerCase());
             String filename = UUID.randomUUID() + "_" + Calendar.getInstance().getTimeInMillis() + "." + extension;
             File fileToStore = new File(rootLocation + "/" + filename);
             try (InputStream inputStream = file.getInputStream()) {

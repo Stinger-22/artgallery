@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -73,5 +74,9 @@ public class ImageService {
     public void unlikeImage(LikeDTO likeDTO) {
         Like like = mapper.toEntity(likeDTO);
         likeRepository.delete(like);
+    }
+
+    public List<Image> findImagesByTagsIn(List<String> tags) {
+        return imageRepository.findImagesByTagsIn(tags);
     }
 }

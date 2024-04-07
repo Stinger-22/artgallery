@@ -9,6 +9,7 @@ import com.artgallery.db.repository.ImageRepository;
 import com.artgallery.db.repository.UserRepository;
 import com.artgallery.dto.ImageDTO;
 import com.artgallery.dto.LikeDTO;
+import com.artgallery.dto.UserDTO;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -49,5 +50,9 @@ public class DTOMapper {
             throw new RuntimeException("Image which is liked doesn't exist");
         }
         return new Like(new LikeID(image, user));
+    }
+
+    public User toEntity(UserDTO userDTO) {
+        return new User(userDTO.nickname(), userDTO.birthDate(), userDTO.country(), userDTO.about());
     }
 }

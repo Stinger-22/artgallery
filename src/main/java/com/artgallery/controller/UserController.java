@@ -3,6 +3,7 @@ package com.artgallery.controller;
 import com.artgallery.db.entity.Image;
 import com.artgallery.db.entity.User;
 import com.artgallery.dto.ImageDTO;
+import com.artgallery.dto.UserDTO;
 import com.artgallery.service.CollectionService;
 import com.artgallery.service.ImageService;
 import com.artgallery.service.UserService;
@@ -38,7 +39,7 @@ public class UserController {
     }
 
     @PostMapping(consumes = "application/json", produces = "application/json")
-    public User createUser(@RequestBody User newUser) {
+    public User createUser(@RequestBody UserDTO newUser) {
         return userService.createUser(newUser);
     }
 
@@ -64,6 +65,12 @@ public class UserController {
     public ResponseEntity<?> createCollection(@PathVariable Long userId, @RequestParam String title) {
         collectionService.createCollection(userId, title);
         return ResponseEntity.status(HttpStatus.OK).body("Collection created");
+    }
+
+    @PutMapping(value = "{userId}/collection")
+    public ResponseEntity<?> renameCollection(@PathVariable Long userId, @RequestParam Long collectionId, @RequestParam String title) {
+        collectionService.renameCollection(collectionId, title);
+        return ResponseEntity.status(HttpStatus.OK).body("Collection renamed");
     }
 
     @PatchMapping(value = "{userId}/collection/add")
