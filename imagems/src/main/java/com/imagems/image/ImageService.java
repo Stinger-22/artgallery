@@ -1,11 +1,14 @@
 package com.imagems.image;
 
+import com.imagems.dto.ImageWithUserDTO;
+import com.imagems.external.User;
 import com.imagems.like.LikeID;
 import com.imagems.tag.Tag;
 import com.imagems.tag.TagRepository;
 import com.imagems.like.Like;
 import com.imagems.like.LikeRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashSet;
@@ -53,6 +56,16 @@ public class ImageService {
 
     public Integer deleteImage(Long id) {
         return imageRepository.deleteImageByImageId(id);
+    }
+
+    public Optional<ImageWithUserDTO> getImageWithUserDTO(Long id) {
+        Image image = imageRepository.getImageByImageId(id);
+        if (image == null) {
+            return Optional.empty();
+        }
+        RestTemplate restTemplate = new RestTemplate();
+        User user = restTemplate.getForObject("http://localhost:8081/api/user/" + image.getUserId(), User.class);
+        return Optional.of(new ImageWithUserDTO(image, user));
     }
 
     public Optional<Image> getImage(Long id) {

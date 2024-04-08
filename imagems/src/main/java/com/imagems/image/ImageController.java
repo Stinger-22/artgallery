@@ -1,5 +1,6 @@
 package com.imagems.image;
 
+import com.imagems.dto.ImageWithUserDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,16 +20,20 @@ public class ImageController {
     }
 
     @GetMapping("/{imageId}")
-    public ResponseEntity<Image> getImage(@PathVariable Long imageId) {
-        Image image = imageService.getImage(imageId).orElse(null);
-        return ResponseEntity.ofNullable(image);
+    public ResponseEntity<?> getImage(@PathVariable Long imageId) {
+        ImageWithUserDTO imageWithUserDTO = imageService.getImageWithUserDTO(imageId).orElse(null);
+        if (imageWithUserDTO == null) {
+            return new ResponseEntity<>("Image with this ID does not exist", HttpStatus.NOT_FOUND);
+        }
+        return ResponseEntity.ok(imageWithUserDTO);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public Iterable<Image> findImagesByTagsIn(@RequestParam(required = false) List<String> tags) {
         if (tags == null) {
-            return imageService.getImages();
+            Iterable<Image> images = imageService.getImages();
+            return images;
         }
         return imageService.findImagesByTagsIn(tags);
     }

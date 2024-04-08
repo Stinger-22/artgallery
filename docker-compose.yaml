@@ -2,12 +2,10 @@ services:
   mariadb:
     container_name: artgallery-mariadb
     image: mariadb
-#    command: --init-file /data/application/init.sql
     environment:
       MYSQL_ROOT_PASSWORD: root
     volumes:
       - /home/stinger/server/data/:/var/lib/mysql
-#      - ./init.sql:/data/application/init.sql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "3307:3306"
@@ -15,7 +13,6 @@ services:
       - artgallery-network
     restart:
       unless-stopped
-
 
 networks:
   artgallery-network:

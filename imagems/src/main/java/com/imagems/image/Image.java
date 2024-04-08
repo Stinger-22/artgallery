@@ -27,6 +27,7 @@ public class Image {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long imageId;
 
+    @Column(nullable = false)
     private Long userId;
 
     @JsonManagedReference
