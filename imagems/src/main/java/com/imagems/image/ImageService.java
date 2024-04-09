@@ -1,37 +1,50 @@
 package com.imagems.image;
 
+import com.imagems.client.StorageClient;
+import com.imagems.client.UserClient;
 import com.imagems.dto.ImageWithUserDTO;
+import com.imagems.exception.NotFoundException;
 import com.imagems.external.User;
 import com.imagems.like.LikeID;
+import com.imagems.mapper.UserMapper;
 import com.imagems.tag.Tag;
 import com.imagems.tag.TagRepository;
 import com.imagems.like.Like;
 import com.imagems.like.LikeRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ImageService {
     private final ImageRepository imageRepository;
     private final TagRepository tagRepository;
     private final LikeRepository likeRepository;
-    @Autowired
-    private RestTemplate restTemplate;
-    public ImageService(ImageRepository imageRepository, TagRepository tagRepository, LikeRepository likeRepository) {
+    private final UserClient userClient;
+    private final StorageClient storageClient;
+
+    public ImageService(ImageRepository imageRepository, TagRepository tagRepository, LikeRepository likeRepository, UserClient userClient, StorageClient storageClient) {
         this.imageRepository = imageRepository;
         this.tagRepository = tagRepository;
         this.likeRepository = likeRepository;
+        this.userClient = userClient;
+        this.storageClient = storageClient;
     }
 
-    public Image createImage(ImageDTO imageDTO, MultipartFile fileImage) {
-//        String filename = storageService.store(fileImage);
+    public Optional<Image> createImage(ImageDTO imageDTO, MultipartFile fileImage) {
+        try {
+            User user = userClient.getUser(imageDTO.userId());
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
+        String filename = storageClient.store(fileImage).getBody();
         Image image = toEntity(imageDTO);
+        image.setFilename(filename);
         image.setLikes(0);
         image.setTags(new HashSet<>());
         for (String stringTag : imageDTO.tags()) {
@@ -46,7 +59,7 @@ public class ImageService {
             }
         }
         imageRepository.save(image);
-        return imageRepository.save(image);
+        return Optional.of(imageRepository.save(image));
     }
 
 //    public ImageResponse getImageViewable(Long imageId) {
@@ -58,6 +71,8 @@ public class ImageService {
 //    }
 
     public Integer deleteImage(Long id) {
+        Image image = imageRepository.getImageByImageId(id);
+        storageClient.delete(image.getFilename());
         return imageRepository.deleteImageByImageId(id);
     }
 
@@ -66,20 +81,27 @@ public class ImageService {
         if (image == null) {
             return Optional.empty();
         }
-        User user = restTemplate.getForObject("http://USER-SERVICE:8081/api/user/" + image.getUserId(), User.class);
-        return Optional.of(new ImageWithUserDTO(image, user));
+        User user = userClient.getUser(image.getUserId());
+        return Optional.of(UserMapper.mapToImageWithUserDTO(image, user));
     }
 
     public Optional<Image> getImage(Long id) {
         return Optional.ofNullable(imageRepository.getImageByImageId(id));
     }
 
-    public Iterable<Image> getImages() {
-        return imageRepository.findAll();
+    public Iterable<ImageWithUserDTO> getImages() {
+        List<Image> images = imageRepository.findAll();
+        return images.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
-    public List<Image> findImagesByTagsIn(List<String> tags) {
-        return imageRepository.findImagesByTagsIn(tags);
+    public List<ImageWithUserDTO> findImagesByTagsIn(List<String> tags) {
+        List<Image> images = imageRepository.findImagesByTagsIn(tags);
+        return images.stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
+    private ImageWithUserDTO toDTO(Image image) {
+        User user = userClient.getUser(image.getUserId());
+        return new ImageWithUserDTO(image, user);
     }
 
     private Image toEntity(ImageDTO imageDTO) {
@@ -96,13 +118,33 @@ public class ImageService {
         return image;
     }
 
-    public Like likeImage(Long id, Long userId) {
-        Like like = new Like(new LikeID(imageRepository.getImageByImageId(id), userId));
-        return likeRepository.save(like);
+    public Optional<Like> likeImage(Long id, Long userId) {
+        try {
+            User user = userClient.getUser(userId);
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
+        Image image = imageRepository.getImageByImageId(id);
+        if (image == null) {
+            return Optional.empty();
+        }
+        Like like = new Like(new LikeID(image, userId));
+        return Optional.of(likeRepository.save(like));
     }
 
     public void unlikeImage(Long id, Long userId) {
-        Like like = new Like(new LikeID(imageRepository.getImageByImageId(id), userId));
+        try {
+            User user = userClient.getUser(userId);
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+//            return Optional.empty();
+        }
+        Image image = imageRepository.getImageByImageId(id);
+        if (image == null) {
+            throw new NotFoundException("Image which is disliked does not exist");
+        }
+        Like like = new Like(new LikeID(image, userId));
         likeRepository.delete(like);
     }
 }

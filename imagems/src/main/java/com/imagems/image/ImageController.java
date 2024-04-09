@@ -1,6 +1,7 @@
 package com.imagems.image;
 
 import com.imagems.dto.ImageWithUserDTO;
+import com.imagems.like.Like;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,18 +31,17 @@ public class ImageController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public Iterable<Image> findImagesByTagsIn(@RequestParam(required = false) List<String> tags) {
+    public Iterable<ImageWithUserDTO> findImagesByTagsIn(@RequestParam(required = false) List<String> tags) {
         if (tags == null) {
-            Iterable<Image> images = imageService.getImages();
-            return images;
+            return imageService.getImages();
         }
         return imageService.findImagesByTagsIn(tags);
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public Image createImage(@RequestPart("image") ImageDTO imageDTO, @RequestPart("file") MultipartFile fileImage) {
-        //TODO Return appropriate status when file is not uploaded
-        return imageService.createImage(imageDTO, fileImage);
+    public ResponseEntity<Image> createImage(@RequestPart("image") ImageDTO imageDTO, @RequestPart("file") MultipartFile fileImage) {
+        Image image = imageService.createImage(imageDTO, fileImage).orElse(null);
+        return ResponseEntity.ofNullable(image);
     }
 
     @DeleteMapping("/{id}")
@@ -55,9 +55,13 @@ public class ImageController {
     }
 
     @PostMapping("/{id}/like")
-    public void likeImage(@PathVariable Long id, @RequestParam Long userId) {
+    public ResponseEntity<String> likeImage(@PathVariable Long id, @RequestParam Long userId) {
         //TODO Get userID from authenticated (Spring Security)
-        imageService.likeImage(id, userId);
+        Like like = imageService.likeImage(id, userId).orElse(null);
+        if (like == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>("Image liked successfully", HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}/unlike")

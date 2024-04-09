@@ -33,8 +33,8 @@ public class CollectionController {
 
     @PostMapping
     public ResponseEntity<Collection> createCollection(@RequestParam Long userId, @RequestParam String title) {
-        Collection collection = collectionService.createCollection(userId, title);
-        return ResponseEntity.status(HttpStatus.OK).body(collection);
+        Collection collection = collectionService.createCollection(userId, title).orElse(null);
+        return ResponseEntity.ofNullable(collection);
     }
 
     @PutMapping("/{collectionId}")
@@ -72,10 +72,10 @@ public class CollectionController {
 
     @DeleteMapping("/{collectionId}")
     @Transactional
-    public ResponseEntity<?> deleteCollection(@PathVariable Long collectionId) {
+    public ResponseEntity<String> deleteCollection(@PathVariable Long collectionId) {
         Integer deleted = collectionService.deleteCollection(collectionId);
         if (deleted == 0) {
-            return ResponseEntity.status(HttpStatus.OK).body("Collection deleted");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>("Collection deleted successfully", HttpStatus.OK);
     }

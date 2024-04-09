@@ -1,11 +1,11 @@
 package com.imagems.image;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 
-public interface ImageRepository extends CrudRepository<Image, Long> {
+public interface ImageRepository extends JpaRepository<Image, Long> {
     Image getImageByImageId(Long id);
     Iterable<Image> getImagesByUserId(Long userId);
     Integer deleteImageByImageId(Long id);
