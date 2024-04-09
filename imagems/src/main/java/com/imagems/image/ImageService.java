@@ -7,6 +7,7 @@ import com.imagems.tag.Tag;
 import com.imagems.tag.TagRepository;
 import com.imagems.like.Like;
 import com.imagems.like.LikeRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,6 +21,8 @@ public class ImageService {
     private final ImageRepository imageRepository;
     private final TagRepository tagRepository;
     private final LikeRepository likeRepository;
+    @Autowired
+    private RestTemplate restTemplate;
     public ImageService(ImageRepository imageRepository, TagRepository tagRepository, LikeRepository likeRepository) {
         this.imageRepository = imageRepository;
         this.tagRepository = tagRepository;
@@ -63,8 +66,7 @@ public class ImageService {
         if (image == null) {
             return Optional.empty();
         }
-        RestTemplate restTemplate = new RestTemplate();
-        User user = restTemplate.getForObject("http://localhost:8081/api/user/" + image.getUserId(), User.class);
+        User user = restTemplate.getForObject("http://USER-SERVICE:8081/api/user/" + image.getUserId(), User.class);
         return Optional.of(new ImageWithUserDTO(image, user));
     }
 

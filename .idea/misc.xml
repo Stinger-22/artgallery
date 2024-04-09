@@ -10,6 +10,8 @@
         <option value="$PROJECT_DIR$/imagems/pom.xml" />
         <option value="$PROJECT_DIR$/artgallerylib/pom.xml" />
         <option value="$PROJECT_DIR$/storagems/pom.xml" />
+        <option value="$PROJECT_DIR$/service-reg/pom.xml" />
+        <option value="$PROJECT_DIR$/gateway/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">

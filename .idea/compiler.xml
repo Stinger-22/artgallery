@@ -8,8 +8,10 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="storagems" />
+        <module name="service-reg" />
         <module name="userms" />
         <module name="imagems" />
+        <module name="gateway" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -21,7 +23,9 @@
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="artgallery" options="-parameters" />
+      <module name="gateway" options="-parameters" />
       <module name="imagems" options="-parameters" />
+      <module name="service-reg" options="-parameters" />
       <module name="storagems" options="-parameters" />
       <module name="tagms" options="-parameters" />
       <module name="userms" options="-parameters" />
