@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
-@FeignClient(name = "STORAGE-SERVICE", configuration = FeignClientConfiguration.class)
+@FeignClient(name = "STORAGE-SERVICE", url = "${storage-service.url}", configuration = FeignClientConfiguration.class)
 public interface StorageClient {
     @PostMapping(value = "/api/storage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ResponseEntity<String> store(@RequestPart("image") MultipartFile image);

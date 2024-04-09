@@ -1,7 +1,7 @@
 services:
   mariadb:
-    container_name: artgallery-mariadb
     image: mariadb
+    container_name: mariadb
     environment:
       MYSQL_ROOT_PASSWORD: root
     volumes:
@@ -10,10 +10,79 @@ services:
     ports:
       - "3307:3306"
     networks:
-      - artgallery-network
+      - mariadb-network
     restart:
       unless-stopped
 
+  servicereg:
+    image: stinger22/servicereg
+    container_name: servicereg
+    hostname: servicereg
+    expose:
+      - 8761
+    ports:
+      - 8761:8761
+    depends_on:
+      - mariadb
+    networks:
+      - mariadb-network
+      - microservice-network
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+  userms:
+    image: stinger22/userms
+    container_name: user
+    depends_on:
+      - servicereg
+    networks:
+      - mariadb-network
+      - microservice-network
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://servicereg:8761/eureka
+
+  imagems:
+    image: stinger22/imagems
+    container_name: image
+    depends_on:
+      - servicereg
+    networks:
+      - mariadb-network
+      - microservice-network
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+  storagems:
+    image: stinger22/storagems
+    container_name: storage
+    depends_on:
+      - servicereg
+    volumes:
+      - /home/stinger/server/storage/:/storage/
+    networks:
+      - mariadb-network
+      - microservice-network
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://servicereg:8761/eureka
+
+  gateway-ms:
+    image: stinger22/gateway-ms
+    container_name: gateway
+    ports:
+      - 8080:8080
+    depends_on:
+      - servicereg
+    networks:
+      - mariadb-network
+      - microservice-network
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://servicereg:8761/eureka
+
 networks:
-  artgallery-network:
+  mariadb-network:
+    driver: bridge
+  microservice-network:
     driver: bridge

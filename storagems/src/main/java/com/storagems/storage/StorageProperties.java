@@ -1,11 +1,13 @@
 package com.storagems.storage;
 
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties("storage")
 public class StorageProperties {
-    private String location = System.getenv("STORAGE_DIR");
+    @Value("${storage.path}")
+    private String location;
 
     public String getLocation() {
         return location;
