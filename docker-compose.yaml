@@ -32,9 +32,11 @@ services:
 
   userms:
     image: stinger22/userms
-    container_name: user
+    container_name: userms
     depends_on:
       - servicereg
+    expose:
+      - 8081
     networks:
       - mariadb-network
       - microservice-network
@@ -47,6 +49,8 @@ services:
     container_name: image
     depends_on:
       - servicereg
+    expose:
+      - 8082
     networks:
       - mariadb-network
       - microservice-network
@@ -55,17 +59,21 @@ services:
 
   storagems:
     image: stinger22/storagems
-    container_name: storage
+    container_name: storagems
     depends_on:
       - servicereg
     volumes:
       - /home/stinger/server/storage/:/storage/
+    expose:
+      - 8084
     networks:
       - mariadb-network
       - microservice-network
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://servicereg:8761/eureka
+      - spring.servlet.multipart.max-file-size=10MB
+      - spring.servlet.multipart.max-request-size=10MB
 
   gateway-ms:
     image: stinger22/gateway-ms

@@ -72,6 +72,10 @@ public class ImageService {
 
     public Integer deleteImage(Long id) {
         Image image = imageRepository.getImageByImageId(id);
+        if (image == null) {
+            return 0;
+        }
+        likeRepository.deleteAllByLikeID_ImageId(image);
         storageClient.delete(image.getFilename());
         return imageRepository.deleteImageByImageId(id);
     }
