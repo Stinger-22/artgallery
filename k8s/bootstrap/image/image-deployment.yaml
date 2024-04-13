@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: image
+  labels:
+    app: image
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: image
+  template:
+    metadata:
+      name: image
+      labels:
+        app: image
+    spec:
+      containers:
+        - name: image
+          image: stinger22/imagems:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8082
+              protocol: TCP
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: k8s
+      restartPolicy: Always
+      

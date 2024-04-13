@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mariadb
+  labels:
+    app: mariadb
+spec:
+  serviceName: mariadb
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mariadb
+  template:
+    metadata:
+      labels:
+        app: mariadb
+    spec:
+      containers:
+        - name: mariadb
+          image: mariadb
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: mariadb-config
+          resources:
+            requests:
+              cpu: 1m
+              memory: 128Mi
+            limits:
+              cpu: 2m
+              memory: 256Mi
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: mariadb-data
+  volumeClaimTemplates:
+    - metadata:
+        name: mariadb-data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 1Gi

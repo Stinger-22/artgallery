@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: storage
+  labels:
+    app: storage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: storage
+  template:
+    metadata:
+      name: storage
+      labels:
+        app: storage
+    spec:
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+        - name: storage
+          image: stinger22/storagems:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8084
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /mnt/storage/
+              name: storage-pc-volume
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: k8s
+      restartPolicy: Always
+      initContainers:
+        - name: change-ownership-container
+          image: busybox
+          command: [ "/bin/chown","-R","1000:1000", "/mnt/storage/" ]
+          securityContext:
+            runAsUser: 0
+            privileged: true
+          volumeMounts:
+            - name: storage-pc-volume
+              mountPath: /mnt/storage/
+      volumes:
+        - name: storage-pc-volume
+          persistentVolumeClaim:
+            claimName: storage-pc-volume-claim
