@@ -6,11 +6,12 @@ import com.imagems.dto.ImageWithUserDTO;
 import com.imagems.exception.NotFoundException;
 import com.imagems.external.User;
 import com.imagems.like.LikeID;
-import com.imagems.mapper.UserMapper;
+import com.imagems.mapper.Mapper;
 import com.imagems.tag.Tag;
 import com.imagems.tag.TagRepository;
 import com.imagems.like.Like;
 import com.imagems.like.LikeRepository;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -80,13 +81,14 @@ public class ImageService {
         return imageRepository.deleteImageByImageId(id);
     }
 
+    @Cacheable(value = "imageCache", key = "#id")
     public Optional<ImageWithUserDTO> getImageWithUserDTO(Long id) {
         Image image = imageRepository.getImageByImageId(id);
         if (image == null) {
             return Optional.empty();
         }
         User user = userClient.getUser(image.getUserId());
-        return Optional.of(UserMapper.mapToImageWithUserDTO(image, user));
+        return Optional.of(Mapper.mapToImageWithUserDTO(image, user));
     }
 
     public Optional<Image> getImage(Long id) {
@@ -105,7 +107,7 @@ public class ImageService {
 
     private ImageWithUserDTO toDTO(Image image) {
         User user = userClient.getUser(image.getUserId());
-        return new ImageWithUserDTO(image, user);
+        return Mapper.mapToImageWithUserDTO(image, user);
     }
 
     private Image toEntity(ImageDTO imageDTO) {

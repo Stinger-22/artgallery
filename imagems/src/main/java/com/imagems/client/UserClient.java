@@ -1,6 +1,6 @@
 package com.imagems.client;
 
-import com.imagems.FeignClientConfiguration;
+import com.imagems.config.FeignClientConfiguration;
 import com.imagems.external.User;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;

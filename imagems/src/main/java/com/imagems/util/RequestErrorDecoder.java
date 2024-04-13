@@ -1,4 +1,4 @@
-package com.imagems;
+package com.imagems.util;
 
 import com.imagems.exception.BadRequestException;
 import com.imagems.exception.NotFoundException;

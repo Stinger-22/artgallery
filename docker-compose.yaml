@@ -10,9 +10,18 @@ services:
     ports:
       - "3307:3306"
     networks:
-      - mariadb-network
+      - db-network
     restart:
       unless-stopped
+
+  redis:
+    image: redis
+    container_name: redis
+    hostname: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - db-network
 
   servicereg:
     image: stinger22/servicereg
@@ -24,21 +33,22 @@ services:
       - 8761:8761
     depends_on:
       - mariadb
+      - redis
     networks:
-      - mariadb-network
+      - db-network
       - microservice-network
     environment:
       - SPRING_PROFILES_ACTIVE=docker
 
   userms:
     image: stinger22/userms
-    container_name: userms
+    container_name: user
     depends_on:
       - servicereg
     expose:
       - 8081
     networks:
-      - mariadb-network
+      - db-network
       - microservice-network
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -52,14 +62,15 @@ services:
     expose:
       - 8082
     networks:
-      - mariadb-network
+      - db-network
       - microservice-network
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://servicereg:8761/eureka
 
   storagems:
     image: stinger22/storagems
-    container_name: storagems
+    container_name: storage
     depends_on:
       - servicereg
     volumes:
@@ -67,7 +78,7 @@ services:
     expose:
       - 8084
     networks:
-      - mariadb-network
+      - db-network
       - microservice-network
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -83,14 +94,14 @@ services:
     depends_on:
       - servicereg
     networks:
-      - mariadb-network
+      - db-network
       - microservice-network
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://servicereg:8761/eureka
 
 networks:
-  mariadb-network:
+  db-network:
     driver: bridge
   microservice-network:
     driver: bridge

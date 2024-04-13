@@ -1,4 +1,4 @@
-package com.imagems;
+package com.imagems.config;
 
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;

@@ -1,6 +1,6 @@
 package com.imagems.client;
 
-import com.imagems.FeignClientConfiguration;
+import com.imagems.config.FeignClientConfiguration;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
